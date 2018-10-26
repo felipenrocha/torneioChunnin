@@ -27,24 +27,23 @@ t_lista_dupla* lista = aloca_lista();
 int ninjutsu, genjutsu,taijutsu, defesa,i,j;
 int  aux = 0;
 
-srand(time(NULL));
+
 
 
 while(aux != 16){
     //Carrega lista:
+   
     char * nome = NULL;
-
     do{
+       
         i = 0;    
         j = random_line();
        //nome:
         while(texto[j] != ','){
             i++;
             j++;
-        }
-        
-        
-        nome = (char*) malloc(i*sizeof(char)+1);
+        }      
+        nome = (char*) malloc((i+1)*sizeof(char));
         j = j - i;
         i = 0;
 
@@ -57,7 +56,7 @@ while(aux != 16){
         }
 
         nome[i] = '\0';
-        printf("%s\n", nome);
+      //  printf("%s\n", nome);
         
     }while(!checa_ninja(lista, nome));
 
@@ -72,7 +71,7 @@ while(aux != 16){
         i++;
         j++;
     }
-    char * elemento = (char*) malloc(i*sizeof(char)+1);
+    char * elemento = (char*) malloc((i+1)*sizeof(char));
     j = j - i;
     i = 0;
     
@@ -91,7 +90,7 @@ while(aux != 16){
         i++;
         j++;
     }
-    char * ninjutsuchar = (char*) malloc( sizeof(char)*i + 1);
+    char * ninjutsuchar = (char*) malloc( sizeof(char)*(i + 1));
     j = j - i;
     i = 0;
     while(texto[j] != ','){
@@ -110,7 +109,7 @@ while(aux != 16){
         i++;
         j++;
     }
-    char * genjutsuchar = (char*) malloc( sizeof(char)*i + 1);
+    char * genjutsuchar = (char*) malloc(sizeof(char)*(i + 1));
     j = j - i;
     i = 0;
     while(texto[j] != ','){
@@ -131,7 +130,7 @@ while(aux != 16){
         i++;
         j++;
     }
-    char * taijutsuchar = (char*) malloc( sizeof(char)*i + 1);
+    char * taijutsuchar = (char*) malloc(sizeof(char)*(i + 1));
     j = j - i;
     i = 0;
     while(texto[j] != ','){
@@ -149,7 +148,7 @@ while(aux != 16){
         i++;
         j++;
     }
-    char * defesachar = (char*) malloc( sizeof(char)*i + 1);
+    char * defesachar = (char*) malloc( sizeof(char)*(i + 1));
     j = j - i;
     i = 0;
     while(texto[j] != '\n'){
@@ -177,8 +176,8 @@ while(aux != 16){
 Ninja* ninja_create(char* nome, char* elemento, int ninjutsu,int genjutsu, int taijutsu, int defesa){
 
     Ninja* ninja = (Ninja*) malloc(sizeof(Ninja));
-    ninja->nome = (char*) malloc(sizeof(nome));
-    ninja->elemento = (char*) malloc(sizeof(elemento));
+    ninja->nome = (char*) malloc((strlen(nome)+1)*sizeof(nome));
+    ninja->elemento = (char*) malloc((strlen(nome)+1)*sizeof(elemento));
     strcpy(ninja->nome, nome);
     strcpy(ninja->elemento, elemento);
     ninja->ninjutsu = ninjutsu;
@@ -197,9 +196,7 @@ int random_line(){
     fseek(file, 0, SEEK_SET);  //Retorna ao inicio  
     char *texto = malloc(fsize + 1);
     fread(texto, fsize, 1, file);
-    fclose(file);
-
- 
+    fclose(file); 
     int random = (rand() % (fsize-1));
     // printf("Random inicial: %d\n", random);
     while(texto[random] != '\n' && random != 0){
@@ -211,12 +208,8 @@ int random_line(){
         
         }
         free(texto);
-        
         return random;
-        
-    
-
-    }
+}
 
 
 
@@ -224,6 +217,7 @@ int checa_ninja(t_lista_dupla* lista, char * nome){
     elemento_ninja * aux = lista->inicio;
     for(int i = 0; aux != NULL;i++){
         if(strcmp(nome, aux->ninja->nome) == 0){
+            free(nome);
             return 0;
         }
         aux = aux->proximo;
@@ -234,3 +228,46 @@ int checa_ninja(t_lista_dupla* lista, char * nome){
 }
 
 
+void ninja_free(Ninja* ninja){
+
+    free(ninja->nome);
+    free(ninja->elemento);
+    free(ninja);
+
+
+}
+
+Ninja* fight(Ninja* ninja_one, Ninja* ninja_two,
+int attribute){
+
+    switch(attribute){
+        case 1:
+        if(ninja_one->ninjutsu >= ninja_two->ninjutsu){
+            return ninja_one;
+        }else{
+            return ninja_two;
+        }
+
+        case 2:
+        if(ninja_one->genjutsu >= ninja_two->genjutsu){
+            return ninja_one;
+        }else{
+            return ninja_two;
+        }
+
+        case 3:
+        if(ninja_one->taijutsu >= ninja_two->taijutsu){
+            return ninja_one;
+        }else{
+            return ninja_two;
+        }
+
+        case 4:
+        if(ninja_one->defesa >= ninja_two->defesa){
+            return ninja_one;
+        }else{
+            return ninja_two;
+        }
+    }
+
+}

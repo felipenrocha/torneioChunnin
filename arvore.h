@@ -10,5 +10,9 @@ typedef struct node {
 }t_node;
 
 
+t_node* tree_create();
+
+t_node* node_create();
+
 
 #endif

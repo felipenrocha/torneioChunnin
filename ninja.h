@@ -5,15 +5,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "lista.h"
 
 
 char * inicializa_arquivo(FILE * file);
 
 int random_line();
 
-int checa_ninja(t_lista_dupla* lista, char * nome);//checa se o ninja ja foi selecionado;
+void ninja_free(Ninja* ninja);
 
-
+Ninja* fight(Ninja* ninja_one, Ninja* ninja_two,
+int attribute);
 
 #endif
