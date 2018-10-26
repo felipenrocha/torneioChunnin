@@ -46,3 +46,13 @@ t_lista_dupla * insere_ninja(t_lista_dupla* lista, char* nome, char* elemento, i
     return lista;
 
 }
+
+void imprime_lista(t_lista_dupla* lista){
+ elemento_ninja * aux = lista->inicio;
+
+while(aux != NULL){
+    printf("Nome: %s\n", aux->ninja->nome);
+    aux = aux->proximo;
+ }
+
+}

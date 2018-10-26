@@ -10,8 +10,9 @@
 
 char * inicializa_arquivo(FILE * file);
 
-char * random_line(char * texto, FILE * file);
+int random_line();
 
+int checa_ninja(t_lista_dupla* lista, char * nome);//checa se o ninja ja foi selecionado;
 
 
 

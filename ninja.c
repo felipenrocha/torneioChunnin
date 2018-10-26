@@ -12,46 +12,9 @@ long fsize = ftell(file);  //Pega o tamanho do arquivo para alocar
 fseek(file, 0, SEEK_SET);  //Retorna ao inicio
 char *string = malloc(fsize + 1);
 fread(string, fsize, 1, file);
-fclose(file);
-
-string[fsize] = 0;
-int j = 0, nline=0,nchar=0, nmax=0;
-//printf("%s", string);
-while(j != fsize){
-    
-    if(string[j] == '\n'){
-        nline++;
-        if(nmax<nchar){
-            nmax = --nchar;
-        }
-        nchar = 0;
-    }
-    nchar++;
-    j++;
-}
-j = 0;
-int i = 0, aux = 0;
-printf("\n%s\n", string);
-char texto[nline][nmax];
 
 
-for(i=0;i<nline-1;i++,j++){
-    for(aux = 0; texto[i][aux] != '\n';aux++,j++){
-    texto[i][aux] = string[j];
-       // printf("%c", string[j]);
-    }
-    texto[i][aux] = '\n';
-    
-
-}
-
-for(i=0;i<nline;i++){
-        for(aux = 0; texto[i][aux] != '\n';aux++){
-            printf("%c", texto[i][aux]);
-        }
-        printf("\n");
-
-    }
+string[fsize] = '\0';
     return string;
 }
 
@@ -61,31 +24,42 @@ for(i=0;i<nline;i++){
 t_lista_dupla* separa_ninjas(char* texto, FILE * file){
 
 t_lista_dupla* lista = aloca_lista();
-    
-int ninjutsu, genjutsu,taijutsu, defesa;
+int ninjutsu, genjutsu,taijutsu, defesa,i,j;
 int  aux = 0;
-int j = 0;
-while(aux != 17){
 
-    int i = 0;
-    //nome:
-    while(texto[j] != ','){
-        i++;
-        j++;
-    }
-    
-    
-    char * nome = (char*) malloc(i*sizeof(char)+1);
-    j = j - i;
-    i = 0;
+srand(time(NULL));
 
-    while(texto[j] != ','){
-        nome[i] = texto[j];
-        i++;
-        j++;
-    }
 
-    nome[i] = '\0';
+while(aux != 16){
+    //Carrega lista:
+    char * nome = NULL;
+
+    do{
+        i = 0;    
+        j = random_line();
+       //nome:
+        while(texto[j] != ','){
+            i++;
+            j++;
+        }
+        
+        
+        nome = (char*) malloc(i*sizeof(char)+1);
+        j = j - i;
+        i = 0;
+
+        while(texto[j] != ','){
+
+            nome[i] = texto[j];
+            i++;
+            j++;
+
+        }
+
+        nome[i] = '\0';
+        printf("%s\n", nome);
+        
+    }while(!checa_ninja(lista, nome));
 
 
     //Elemento: 
@@ -186,9 +160,15 @@ while(aux != 17){
     defesachar[i] = '\0';
     defesa = atol(defesachar);
     insere_ninja(lista, nome, elemento, ninjutsu, genjutsu, taijutsu, defesa);
+    free(nome);
+    free(elemento);
+    free(ninjutsuchar);
+    free(taijutsuchar);
+    free(genjutsuchar);
+    free(defesachar);
     aux++;
 }
-
+ imprime_lista(lista);
 }
 
 
@@ -210,38 +190,47 @@ Ninja* ninja_create(char* nome, char* elemento, int ninjutsu,int genjutsu, int t
 
 }
 
-char * random_line(char * texto, FILE * file){
-    srand((unsigned) time(0));
-    int j = 0;
+int random_line(){
+    FILE *file = fopen(ARQUIVO, "r");
     fseek(file, 0, SEEK_END);
-    long fsize = ftell(file);  //Pega o tamanho do arquivo para alocar
+    int fsize = ftell(file);  //Pega o tamanho do arquivo para alocar
     fseek(file, 0, SEEK_SET);  //Retorna ao inicio  
+    char *texto = malloc(fsize + 1);
+    fread(texto, fsize, 1, file);
+    fclose(file);
 
-    int random = (rand() % fsize);
-    while(texto[random] != '\n' && texto[random] != EOF){
+ 
+    int random = (rand() % (fsize-1));
+    // printf("Random inicial: %d\n", random);
+    while(texto[random] != '\n' && random != 0){
+            random--;
+        } 
+        if(random != 0){  
+
         random++;
-    }
-    j = random;
-    if(texto[j] == EOF){
-        while(texto[j] != '\n'){
-         j--;
+        
         }
-        j++;
-    }
-   int i = 0;
-   while(texto[j] != '\n' && texto[j] != EOF){
-       i++;
-       j++;
-   }
-    j = j - i;
-    char * line = (char*) malloc(sizeof(char)*i + 1);
-    i = 0;
-    while(texto[j] != '\n' && texto[j] != EOF){
-        line[i] = texto[j];
-        i++;
-        j++;
+        free(texto);
+        
+        return random;
+        
+    
+
     }
 
-    printf("%s", line);
-    return line;
+
+
+int checa_ninja(t_lista_dupla* lista, char * nome){
+    elemento_ninja * aux = lista->inicio;
+    for(int i = 0; aux != NULL;i++){
+        if(strcmp(nome, aux->ninja->nome) == 0){
+            return 0;
+        }
+        aux = aux->proximo;
+    }
+    return 1;
+
+
 }
+
+

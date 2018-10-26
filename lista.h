@@ -45,4 +45,5 @@ t_lista_dupla* separa_ninjas(char* arquivotexto, FILE * file);
 
 Ninja* ninja_create(char* nome, char* elemento, int ninjutsu,int genjutsu, int taijutsu, int defesa);
 
+void imprime_lista(t_lista_dupla* lista);
 #endif
