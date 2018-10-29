@@ -1,6 +1,8 @@
 #include "ninja.h"
-#include "lista.h"
-#include "time.h"
+#include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 char * inicializa_arquivo(FILE * file){
 
 int i=0;
@@ -27,7 +29,7 @@ t_lista_dupla* lista = aloca_lista();
 int ninjutsu, genjutsu,taijutsu, defesa,i,j;
 int  aux = 0;
 
-
+if(lista){
 
 
 while(aux != 16){
@@ -166,9 +168,15 @@ while(aux != 16){
     free(genjutsuchar);
     free(defesachar);
     aux++;
+    
+
+        }
+
+        return lista;}
+
+        return NULL;
 }
- imprime_lista(lista);
-}
+
 
 
 
@@ -241,33 +249,126 @@ Ninja* fight(Ninja* ninja_one, Ninja* ninja_two,
 int attribute){
 
     switch(attribute){
+        case 0:
+            if(ninja_one->ninjutsu >= ninja_two->ninjutsu){
+                return ninja_one;
+            }else{
+                return ninja_two;
+            }
+
         case 1:
-        if(ninja_one->ninjutsu >= ninja_two->ninjutsu){
-            return ninja_one;
-        }else{
-            return ninja_two;
-        }
+            if(ninja_one->genjutsu >= ninja_two->genjutsu){
+                return ninja_one;
+            }else{
+                return ninja_two;
+            }
 
         case 2:
-        if(ninja_one->genjutsu >= ninja_two->genjutsu){
-            return ninja_one;
-        }else{
-            return ninja_two;
-        }
+            if(ninja_one->taijutsu >= ninja_two->taijutsu){
+                return ninja_one;
+            }else{
+                return ninja_two;
+            }
 
         case 3:
-        if(ninja_one->taijutsu >= ninja_two->taijutsu){
-            return ninja_one;
-        }else{
-            return ninja_two;
-        }
-
-        case 4:
-        if(ninja_one->defesa >= ninja_two->defesa){
-            return ninja_one;
-        }else{
-            return ninja_two;
-        }
+            if(ninja_one->defesa >= ninja_two->defesa){
+                return ninja_one;
+            }else{
+                return ninja_two;
+            }
     }
 
+}
+
+Ninja * tela_personagem(t_lista_dupla* lista){
+
+    elemento_ninja * aux = lista->inicio;
+    printf("Escolha seu personagem: \n\n");
+    
+
+    int i = 0, j;
+  
+    for(i; i<16;i++){
+
+        j = rand() % 4;
+        //printf("\nj = %d\n", j);
+   
+        if(j == 0){
+        printf("Personagem %d:\nNinjutsu: %d  Genjutsu: ?? Taijutsu: ?? Defesa: ??\n\n", i+1, aux->ninja->ninjutsu);
+        }
+        else if(j == 1){
+                printf("Personagem %d:\nNinjutsu: ??  Genjutsu: %d Taijutsu: ?? Defesa: ??\n\n", i+1, aux->ninja->genjutsu);
+        }                    
+        else if(j == 2){
+                printf("Personagem %d:\nNinjutsu: ??  Genjutsu: ?? Taijutsu: %d Defesa: ??\n\n", i+1, aux->ninja->taijutsu);
+        }
+        else if(j ==3){
+                printf("Personagem %d:\nNinjutsu: ??  Genjutsu: ?? Taijutsu: ?? Defesa: %d\n\n", i+1, aux->ninja->defesa);
+        }        
+
+
+        aux = aux->proximo;
+        }
+        printf("Qual personagem deseja escolher? (Numeros de 1-16)\n");
+        int a;
+        scanf("%i", &a);
+        aux = lista->inicio;
+        for(i = 1; i<a; i++){
+            aux = aux->proximo;
+        }
+
+
+        printf("\nPersonagem Escolhido: %s\n", aux->ninja->nome);
+
+        return aux->ninja;
+       
+
+    }
+
+
+
+
+void luta_npc(t_node * root, Ninja * player){
+    int attribute = rand() % 3;
+
+    if(root == NULL){
+        return;
+    }
+    if((root->left->left == NULL && root->right->right == NULL)
+    // Checa se há um nó que possui 2 filhos para duelarem
+    && (strcmp(root->left->node->nome, player->nome)
+    && strcmp(root->right->node->nome, player->nome))){
+        Ninja * ninja_one = root->left->node; 
+        Ninja * ninja_two = root->right->node;
+        root->node = ninja_create(fight(ninja_one, ninja_two, attribute)->nome, 
+        fight(ninja_one, ninja_two, attribute)->elemento, 
+        fight(ninja_one, ninja_two, attribute)->ninjutsu, 
+        fight(ninja_one, ninja_two, attribute)->genjutsu,
+        fight(ninja_one, ninja_two, attribute)->taijutsu,
+        fight(ninja_one, ninja_two, attribute)->defesa);
+        ninja_free(ninja_one);
+        ninja_free(ninja_two);
+        root->left = NULL;
+        root->right = NULL;
+    }
+    luta_npc(root->left, player);
+    luta_npc(root->right, player);
+
+
+}
+
+
+t_node * no_personagem(t_node * root, Ninja * player){
+ 
+    if(root == NULL){
+        return root;
+    }
+
+    if(root->left->node == player || root->right->node == player){
+        
+        return root;
+    }
+    no_personagem(root->left, player);
+    no_personagem(root->right, player);
+    return root;
 }

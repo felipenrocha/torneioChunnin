@@ -1,5 +1,7 @@
 #include "lista.h"
 #include "ninja.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 
 t_lista_dupla* aloca_lista(){
@@ -15,6 +17,7 @@ elemento_ninja* aloca_elemento(Ninja * ninja){
 
     elemento_ninja* elemento = (elemento_ninja*) malloc(sizeof(elemento_ninja));
     elemento->ninja = ninja;
+    elemento->tag = 0;
     elemento->proximo = NULL;
     elemento->anterior = NULL;
 

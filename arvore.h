@@ -3,16 +3,13 @@
 
 #include "ninja.h"
 
-typedef struct node {
-    Ninja * node;
-    struct node* left;
-    struct node * right;
-}t_node;
-
+#include "structs.h"
 
 t_node* tree_create();
 
 t_node* node_create();
 
+void add_ninjas(t_lista_dupla* lista, t_node* root);
 
+void tree_print_preorder(t_node * root);
 #endif
