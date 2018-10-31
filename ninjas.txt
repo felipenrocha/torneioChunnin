@@ -19,7 +19,7 @@ Rock Lee, Agua, 67, 35, 81, 36
 Chouji, Terra, 67, 72, 83, 75
 Kabuto, Fogo, 55, 75, 35, 45
 Kiba, Agua, 58, 48, 70, 90
-Tobirama, 47, 87, 65, 33, 58
+Tobirama, Relampago, 87, 65, 33, 58
 Kakashi, Relampago, 95, 64, 76, 47
 Itachi, Fogo, 73, 67, 38, 85
 Madara, Fogo, 86, 52, 76, 40

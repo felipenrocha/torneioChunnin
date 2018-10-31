@@ -81,7 +81,7 @@ t_node * aux = NULL;
 
     if((root->left->node != NULL && root->right->node != NULL) &&
     (root->right->node == player) || (root->left->node == player)){
-        printf()
+        
         aux = root;
         return aux;
     }

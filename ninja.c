@@ -249,28 +249,28 @@ Ninja* fight(Ninja* ninja_one, Ninja* ninja_two,
 int attribute){
 
     switch(attribute){
-        case 0:
+        case 1:
             if(ninja_one->ninjutsu >= ninja_two->ninjutsu){
                 return ninja_one;
             }else{
                 return ninja_two;
             }
 
-        case 1:
+        case 2:
             if(ninja_one->genjutsu >= ninja_two->genjutsu){
                 return ninja_one;
             }else{
                 return ninja_two;
             }
 
-        case 2:
+        case 3:
             if(ninja_one->taijutsu >= ninja_two->taijutsu){
                 return ninja_one;
             }else{
                 return ninja_two;
             }
 
-        case 3:
+        case 4:
             if(ninja_one->defesa >= ninja_two->defesa){
                 return ninja_one;
             }else{
@@ -309,9 +309,16 @@ Ninja * tela_personagem(t_lista_dupla* lista){
 
         aux = aux->proximo;
         }
-        printf("Qual personagem deseja escolher? (Numeros de 1-16)\n");
         int a;
+        do{
+        printf("Qual personagem deseja escolher? (Numeros de 1-16)\n");
+        
         scanf("%i", &a);
+        if(a<1 || a>16){
+            printf("Selecione um personagem valido entre 1 e 16.\n");
+        }
+        
+        }while(a<1 || a>16);
         aux = lista->inicio;
         for(i = 1; i<a; i++){
             aux = aux->proximo;
@@ -331,11 +338,17 @@ Ninja * tela_personagem(t_lista_dupla* lista){
 void luta_npc(t_node * root, t_node *  parent){
     int attribute = rand() % 3;
 
-    if(root == NULL){
+    if(root == parent){
+        return ;
+    }
+
+    if(root->left == NULL && root->right == NULL){
         return;
     }
-    if((root != parent ) &&
-    (root->left->left == NULL && root->right->right == NULL)){
+       
+ 
+    if((root->left->left == NULL && root->right->right == NULL)
+     && (root->left->node != NULL && root->right->node !=NULL) ){
       // Checa se há um nó que possui 2 filhos para duelarem
        
         Ninja * ninja_one = root->left->node; 
@@ -351,39 +364,225 @@ void luta_npc(t_node * root, t_node *  parent){
         root->left = NULL;
         root->right = NULL;
     }
-    luta_npc(root->left, parent);
-    luta_npc(root->right, parent);
+
+   if(root->left->node == NULL && root->right->node == NULL){
+
+            luta_npc(root->left, parent);
+
+            luta_npc(root->right, parent);
+
+    }
 
 
 }
 
 
-void luta_personagem(t_node * parent, Ninja * player){
+void luta_personagem(t_node * parent, Ninja * player, t_node * root){
     Ninja * ninja_one = player;
     Ninja * ninja_two = NULL;
-    printf("1a ETAPA\n\n");
-    printf("Seu personagem : %s\n", player->nome);
-    printf("1)Ninjutsu : %d\n", player->ninjutsu);
-    printf("2)Genjutsu : %d\n", player->genjutsu);
-    printf("3)Taijutsu : %d\n", player->taijutsu);
-    printf("4)Defesa   : %d\n", player->defesa);
     if(parent->right->node == player){
      ninja_two = parent->left->node;
     
     }else{
         ninja_two = parent->right->node;
     }
-        printf("\nSeu adversario: %s", ninja_two->nome);
+    
+
+    printf("1a ETAPA\n\n");
+    printf("Seu personagem : %s\n", player->nome);
+    if(supremacia_elemental(ninja_one, ninja_two) ==1){
+
+        printf("INFERIORIDADE ELEMENTAL: %s < %s\n", ninja_one->elemento, ninja_two->elemento);
+        printf("Todos Atributos foram multiplicados por 0.8x\n\n");
+
+        
+    }
+    else if(supremacia_elemental(ninja_one, ninja_two) == 2 ){
+
+        printf("SUPREMACIA ELEMENTAL: %s > %s\n", ninja_one->elemento, ninja_two->elemento);
+        printf("Todos Atributos foram multiplicados por 1.2x\n\n");
+
+    }
+
+    ninja_one = multiplica_atributo(supremacia_elemental(ninja_one, ninja_two), ninja_one);
+
+
+    printf("1)Ninjutsu : %d\n", player->ninjutsu);
+    printf("2)Genjutsu : %d\n", player->genjutsu);
+    printf("3)Taijutsu : %d\n", player->taijutsu);
+    printf("4)Defesa   : %d\n", player->defesa);
+ 
+        printf("\nSeu adversario: %s\n\n", ninja_two->nome);
+
+    
+    int a;
+    do{
+    printf("Selecione um atributo: ");
+    scanf("%i",&a);
+    if(a<1 || a>4){
+
+        printf("Selecione um atributo valido.\n");}
+
+    }while(a<1 || a > 4);
+
+    Ninja * winner = fight(ninja_one, ninja_two, a);
+    if(winner == ninja_one){
+        printf("Vitoria\n");
+
+        player = retorna_atributos(supremacia_elemental(ninja_one, ninja_two), player);
+
+        ninja_free(ninja_two);
+        parent->right = NULL;
+        parent->left = NULL;
+
+    }
+    else if(winner == ninja_two){
+        ninja_free(ninja_one);
+        parent->right = NULL;
+        parent->left = NULL;
+        printf("Derrota");
+    }
+    parent->node = winner;
+    
+
+
+}
 
 
 
+
+
+Ninja * multiplica_atributo(int n, Ninja * player){
+
+if(n == 1){
+
+    player->ninjutsu = 0.8 * player->ninjutsu;
+    player->genjutsu = 0.8 * player->genjutsu;
+    player->taijutsu = 0.8 * player->taijutsu;
+    player->defesa =   0.8 * player->defesa;
+    return player;
+}
+
+else if(n == 2){
+
+    player->ninjutsu = 1.2 * player->ninjutsu;
+    player->genjutsu = 1.2 * player->genjutsu;
+    player->taijutsu = 1.2 * player->taijutsu;
+    player->defesa =   1.2 * player->defesa;
+    return player;
+}
+
+return player;
+
+}
+
+
+
+
+
+
+int supremacia_elemental(Ninja* player_one, Ninja* player_two){
+
+    if(!strcmp(player_one->elemento,"Fogo")){
+
+        if(!strcmp(player_two->elemento, "Agua")){
+            return 1;
+        }
+        else if(!strcmp(player_two->elemento, "Vento")){
+            return 2;
+        }
+        else{
+            return 0;
+        }
+    }
+
+
+    
+    else if(!strcmp(player_one->elemento,"Vento")){
+        
+        if(!strcmp(player_two->elemento, "Fogo")){
+            return 1;
+        }
+        else if(!strcmp(player_two->elemento, "Relampago")){
+            return 2;
+        }
+        else{
+            return 0;
         }
 
 
 
+    }
+
+    else if(!strcmp(player_one->elemento,"Relampago")){
+
+        if(!strcmp(player_two->elemento, "Vento")){
+            return 1;
+        }
+        else if(!strcmp(player_two->elemento, "Terra")){
+            return 2;
+        }
+        else{
+            return 0;
+        }
 
 
+    }
+    else if(!strcmp(player_one->elemento,"Terra")){
+
+        if(!strcmp(player_two->elemento, "Relampago")){
+            return 1;
+        }
+        else if(!strcmp(player_two->elemento, "Agua")){
+            return 2;
+        }
+        else{
+            return 0;
+        }
+
+    }
+    else if(!strcmp(player_one->elemento,"Agua")){
 
 
+        if(!strcmp(player_two->elemento, "Terra")){
+            return 1;
+        }
+        else if(!strcmp(player_two->elemento, "Fogo")){
+            return 2;
+        }
+        else{
+            return 0;
+        }
+    }
+
+return 0;
 
 
+}
+
+
+Ninja * retorna_atributos(int n, Ninja * player){
+
+    if(n == 1){
+        player->ninjutsu = player->ninjutsu / 0.8;
+        player->genjutsu = player->genjutsu / 0.8;
+        player->taijutsu = player->taijutsu / 0.8;
+        player->defesa = player->defesa / 0.8;
+
+        return player;
+    }
+    else if(n == 2){
+
+        player->ninjutsu = player->ninjutsu / 1.2;
+        player->genjutsu = player->genjutsu / 1.2;
+        player->taijutsu = player->taijutsu / 1.2;
+        player->defesa = player->defesa / 1.2;
+        
+        
+        return player;
+
+    }
+
+return player;
+
+}

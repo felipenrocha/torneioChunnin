@@ -32,8 +32,10 @@ int main()
   // tree_print_preorder(root);
     t_node * parent = NULL;
     parent = busca_parent_node(root, player);
-    luta_personagem(parent, player);
 
+    luta_personagem(parent, player, root);
+    
+    luta_npc(root, parent);
     return 0;
     
 }
