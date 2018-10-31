@@ -14,7 +14,7 @@ int main()
     t_lista_dupla* lista =  separa_ninjas(texto, file);
 
 
-    imprime_lista(lista);
+   // imprime_lista(lista);
 
     t_node * root = tree_create(4);
 
@@ -24,18 +24,16 @@ int main()
 
     printf("Primeira Etapa:\n");
     tree_print_preorder(root);
-   Ninja * player = tela_personagem(lista);
-
+    Ninja * player  = tela_personagem(lista);
+    
   //  luta_npc(root, player);
 
-  // printf("Segunda etapa: \n");
-   // tree_print_preorder(root);
-   t_node * no = no_personagem(root, player);
-   if(no->right){
-       printf("%s", no->right->node->nome);
-   }else if(no->left){
-       printf("%s", no->left->node->nome);
-   }
+    
+  // tree_print_preorder(root);
+    t_node * parent = NULL;
+    parent = busca_parent_node(root, player);
+    luta_personagem(parent, player);
+
     return 0;
     
 }

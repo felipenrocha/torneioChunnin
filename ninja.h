@@ -15,12 +15,12 @@ void ninja_free(Ninja* ninja);
 
 Ninja* fight(Ninja* ninja_one, Ninja* ninja_two,int attribute);
 
-Ninja * tela_personagem(t_lista_dupla* lista);
+Ninja *  tela_personagem(t_lista_dupla* lista);
 
-void luta_npc(t_node * root, Ninja * player);
+void luta_npc(t_node * root, t_node * parent);
 
-void luta_personagem(t_node * root, int personagem);
+void luta_personagem(t_node * parent, Ninja * player);
 
-t_node * no_personagem(t_node * root, Ninja * player)
+
 
 #endif

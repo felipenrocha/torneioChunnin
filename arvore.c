@@ -71,3 +71,31 @@ void add_ninjas(t_lista_dupla * lista, t_node* root){
 
 
 }
+
+t_node * busca_parent_node(t_node * root, Ninja * player){
+t_node * aux = NULL;
+    
+    if(root->left == NULL && root->right == NULL){
+        return NULL;
+    }
+
+    if((root->left->node != NULL && root->right->node != NULL) &&
+    (root->right->node == player) || (root->left->node == player)){
+        aux = root;
+        return aux;
+    }
+   
+    aux = busca_parent_node(root->left, player);
+
+    if(aux == NULL){
+
+     aux = busca_parent_node(root->right, player);
+
+    }
+
+
+    return aux;
+   
+    
+}
+

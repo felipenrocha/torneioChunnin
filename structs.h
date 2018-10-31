@@ -16,6 +16,7 @@ typedef struct ninja{
 typedef struct elemento_ninja{
     Ninja* ninja;
     int tag;
+    int n_lutas;
     struct elemento_ninja* proximo;
     struct elemento_ninja* anterior;
 
