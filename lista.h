@@ -24,4 +24,7 @@ void imprime_lista(t_lista_dupla* lista);
 int checa_ninja(t_lista_dupla* lista, char * nome); //checa se o ninja ja foi selecionado;
 
 
+void free_lista(t_lista_dupla * lista);
+
+
 #endif

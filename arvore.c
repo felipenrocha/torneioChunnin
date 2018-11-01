@@ -43,6 +43,25 @@ void tree_print_preorder(t_node* root){
         tree_print_preorder(root->right);
 
     }
+}
+
+
+
+int is_parent(t_node * node){
+    if(node->right->node != NULL && node->left->node != NULL){
+        return 1;
+    }else{
+        return 0;
+    }
+}
+
+int is_leaf(t_node * node){
+
+    if(node->right == NULL && node->left == NULL){
+        return 1;
+    }else{
+        return 0;
+    }
 
 
 }
@@ -98,5 +117,21 @@ t_node * aux = NULL;
     return aux;
    
     
+}
+
+void destroy_tree(t_node * root){
+
+    if(!root){
+        return;
+    }
+    if(root->right == NULL && root->left == NULL){
+        free(root);
+        return;
+    }
+    destroy_tree(root->left);
+    destroy_tree(root->right);
+
+
+
 }
 

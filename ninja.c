@@ -14,8 +14,6 @@ long fsize = ftell(file);  //Pega o tamanho do arquivo para alocar
 fseek(file, 0, SEEK_SET);  //Retorna ao inicio
 char *string = malloc(fsize + 1);
 fread(string, fsize, 1, file);
-
-
 string[fsize] = '\0';
     return string;
 }
@@ -150,7 +148,7 @@ while(aux != 16){
         i++;
         j++;
     }
-    char * defesachar = (char*) malloc( sizeof(char)*(i + 1));
+    char * defesachar = (char*) malloc(sizeof(char)*(i + 1));
     j = j - i;
     i = 0;
     while(texto[j] != '\n'){
@@ -204,6 +202,7 @@ int random_line(){
     fseek(file, 0, SEEK_SET);  //Retorna ao inicio  
     char *texto = malloc(fsize + 1);
     fread(texto, fsize, 1, file);
+    texto[fsize] = 0;
     fclose(file); 
     int random = (rand() % (fsize-1));
     // printf("Random inicial: %d\n", random);
@@ -277,7 +276,8 @@ int attribute){
                 return ninja_two;
             }
     }
-
+    
+return ninja_one;
 }
 
 Ninja * tela_personagem(t_lista_dupla* lista){
@@ -335,50 +335,49 @@ Ninja * tela_personagem(t_lista_dupla* lista){
 
 
 
-void luta_npc(t_node * root, t_node *  parent){
-    int attribute = rand() % 3;
+t_node * luta_npc(t_node * root, t_node *  parent){
 
-    if(root == parent){
-        return ;
-    }
-
-    if(root->left == NULL && root->right == NULL){
-        return;
-    }
-       
- 
-    if((root->left->left == NULL && root->right->right == NULL)
-     && (root->left->node != NULL && root->right->node !=NULL) ){
+    if(is_leaf(root)){
+        return NULL;
+    }      
+    
+   else if(is_parent(root) && root != parent){
       // Checa se há um nó que possui 2 filhos para duelarem
-       
+        int attribute = rand() % 3 + 1;
         Ninja * ninja_one = root->left->node; 
         Ninja * ninja_two = root->right->node;
-        root->node = ninja_create(fight(ninja_one, ninja_two, attribute)->nome, 
-        fight(ninja_one, ninja_two, attribute)->elemento, 
-        fight(ninja_one, ninja_two, attribute)->ninjutsu, 
-        fight(ninja_one, ninja_two, attribute)->genjutsu,
-        fight(ninja_one, ninja_two, attribute)->taijutsu,
-        fight(ninja_one, ninja_two, attribute)->defesa);
-        ninja_free(ninja_one);
-        ninja_free(ninja_two);
+        Ninja * winner = fight(ninja_one, ninja_two, attribute);
+        Ninja * loser  = retorna_perdedor(ninja_one, ninja_two, attribute);
+        root->node = winner;
+        printf("%s (%s %d) x %s (%s %d)  \n%s ganhou a batalha\n",
+        ninja_one->nome, retorna_string_atributo(attribute), retorna_valor_atributo(ninja_one, attribute),
+        ninja_two->nome, retorna_string_atributo(attribute), retorna_valor_atributo(ninja_two, attribute),
+        winner->nome);
+        //ninja_free(loser);
+        free(root->right);
+        free(root->left);
         root->left = NULL;
         root->right = NULL;
+        return root;
     }
 
-   if(root->left->node == NULL && root->right->node == NULL){
+    else{
+       // printf("Oi");
+        luta_npc(root->left, parent);
 
-            luta_npc(root->left, parent);
-
-            luta_npc(root->right, parent);
-
+        luta_npc(root->right, parent);
     }
 
-
+    return root;
 }
 
 
-void luta_personagem(t_node * parent, Ninja * player, t_node * root){
+void luta_personagem(Ninja * player, t_node * root){
+      int curr_attribute = 0,a = curr_attribute, i = 0;
+while(i<4){
     Ninja * ninja_one = player;
+    t_node * parent = busca_parent_node(root, player);
+    
     Ninja * ninja_two = NULL;
     if(parent->right->node == player){
      ninja_two = parent->left->node;
@@ -386,9 +385,7 @@ void luta_personagem(t_node * parent, Ninja * player, t_node * root){
     }else{
         ninja_two = parent->right->node;
     }
-    
-
-    printf("1a ETAPA\n\n");
+    printf("\n\n\n%da ETAPA\n\n", i+1);
     printf("Seu personagem : %s\n", player->nome);
     if(supremacia_elemental(ninja_one, ninja_two) ==1){
 
@@ -403,48 +400,45 @@ void luta_personagem(t_node * parent, Ninja * player, t_node * root){
         printf("Todos Atributos foram multiplicados por 1.2x\n\n");
 
     }
-
+    printf("Seu adversario: %s\n", ninja_two->nome);
     ninja_one = multiplica_atributo(supremacia_elemental(ninja_one, ninja_two), ninja_one);
-
-
-    printf("1)Ninjutsu : %d\n", player->ninjutsu);
-    printf("2)Genjutsu : %d\n", player->genjutsu);
-    printf("3)Taijutsu : %d\n", player->taijutsu);
-    printf("4)Defesa   : %d\n", player->defesa);
- 
-        printf("\nSeu adversario: %s\n\n", ninja_two->nome);
-
+    a = print_atributos_validos(curr_attribute, player);
     
-    int a;
-    do{
-    printf("Selecione um atributo: ");
-    scanf("%i",&a);
-    if(a<1 || a>4){
-
-        printf("Selecione um atributo valido.\n");}
-
-    }while(a<1 || a > 4);
+    curr_attribute = a;
 
     Ninja * winner = fight(ninja_one, ninja_two, a);
-    if(winner == ninja_one){
-        printf("Vitoria\n");
+    Ninja * loser  = retorna_perdedor(ninja_one, ninja_two, a);
+    printf("%s (%s %d) x %s (%s %d)  \n%s ganhou a batalha\n",
+        ninja_one->nome, retorna_string_atributo(a), retorna_valor_atributo(ninja_one, a),
+        ninja_two->nome, retorna_string_atributo(a), retorna_valor_atributo(ninja_two, a),
+        winner->nome);
+    player = retorna_atributos(supremacia_elemental(ninja_one, ninja_two), player);
 
-        player = retorna_atributos(supremacia_elemental(ninja_one, ninja_two), player);
+   // ninja_free(loser);
+    free(parent->left);
+    free(parent->right);
 
-        ninja_free(ninja_two);
-        parent->right = NULL;
-        parent->left = NULL;
+    parent->right = NULL;
+    parent->left = NULL;
 
-    }
-    else if(winner == ninja_two){
-        ninja_free(ninja_one);
-        parent->right = NULL;
-        parent->left = NULL;
-        printf("Derrota");
-    }
-    parent->node = winner;
     
+    parent->node = winner;
+    //tree_print_preorder(root);
+    if(player==loser){
+        printf("\n\n DERROTA \n\n");
+        break;
+    }
+    printf("\n\nResultados da %da etapa:\n", i+1);
+root =  luta_npc(root, parent);
+i++;
+}
 
+    while(root->node == NULL){
+            printf("\n\nResultados da %da etapa:\n", i+1);
+            root = luta_npc(root, NULL);
+            i++;
+        }
+    printf("\nVencedor: %s\n", root->node->nome);
 
 }
 
@@ -585,4 +579,205 @@ Ninja * retorna_atributos(int n, Ninja * player){
 
 return player;
 
+}
+
+
+Ninja * retorna_perdedor(Ninja * ninja_one, Ninja * ninja_two, int attribute){
+
+    switch(attribute){
+        case 1:
+            if(ninja_one->ninjutsu < ninja_two->ninjutsu){
+                return ninja_one;
+            }else{
+                return ninja_two;
+            }
+
+        case 2:
+            if(ninja_one->genjutsu < ninja_two->genjutsu){
+                return ninja_one;
+            }else{
+                return ninja_two;
+            }
+
+        case 3:
+            if(ninja_one->taijutsu < ninja_two->taijutsu){
+                return ninja_one;
+            }else{
+                return ninja_two;
+            }
+
+        case 4:
+            if(ninja_one->defesa < ninja_two->defesa){
+                return ninja_one;
+            }else{
+                return ninja_two;
+            }
+    }
+
+}
+
+char * retorna_string_atributo( int atributo){
+
+    if(atributo == 1){
+        return "Ninjutsu";
+    }
+    else if(atributo == 2){
+        return "Genjutsu";
+    }
+    else if(atributo == 3){
+        return "Taijutsu";
+    }
+    else if(atributo == 4){
+        return "Defesa";
+    }
+}
+
+int retorna_valor_atributo(Ninja * ninja, int atributo){
+
+    if(atributo == 1){
+        return ninja->ninjutsu;
+    }
+    else if(atributo == 2){
+        return ninja->genjutsu;
+    }
+    else if(atributo == 3){
+        return ninja->taijutsu;
+    }
+    else if(atributo == 4){
+        return ninja->defesa;
+    }
+
+
+}
+
+
+int print_atributos_validos(int current_attribute, Ninja * player_one){
+int a = 0;
+
+    if(current_attribute == 0){
+        do{
+            printf("1) Ninjutsu : %d\n", player_one->ninjutsu);
+            printf("2) Genjutsu : %d\n", player_one->genjutsu);
+            printf("3) Taijutsu : %d\n", player_one->taijutsu);
+            printf("4) Defesa   : %d\n", player_one->defesa);
+
+            
+            
+                scanf("%i", &a);
+                if((a<1 || a > 4)){
+                    printf("\nSelecione um atributo valido.\n");
+                }
+        }while(a<1 || a > 4);
+        return a;
+
+    }
+    else if(current_attribute == 1){
+        do{
+            printf("X) XX       : XX\n");
+            printf("2) Genjutsu : %d\n", player_one->genjutsu);
+            printf("3) Taijutsu : %d\n", player_one->taijutsu);
+            printf("4) Defesa   : %d\n", player_one->defesa);               
+            scanf("%i", &a);
+            if((a<1 || a > 4) || a == 1){
+                printf("\nSelecione um atributo valido.\n");
+            }
+        }while((a<1 || a > 4) || a == 1);
+        return a;
+
+    }else if(current_attribute == 2){
+        do{
+            printf("1) Ninjutsu : %d\n", player_one->ninjutsu);
+            printf("X) XX       : XX\n");
+            printf("3) Taijutsu : %d\n", player_one->taijutsu);
+            printf("4) Defesa   : %d\n", player_one->defesa);
+       
+            scanf("%i", &a);
+            if((a<1 || a > 4) || a == 2){
+                printf("\nSelecione um atributo valido.\n");
+            }
+        }while((a<1 || a > 4) || a == 2);
+        return a;
+    }
+    else if(current_attribute == 3){
+        do{
+            printf("1) Ninjutsu : %d\n", player_one->ninjutsu);
+            printf("2) Genjutsu : %d\n", player_one->genjutsu);
+            printf("X) XX       : XX\n");
+            printf("4) Defesa   : %d\n", player_one->defesa);     
+            scanf("%i", &a);
+            if((a<1 || a > 4) || a == 3){
+                printf("\nSelecione um atributo valido.\n");
+            }
+        }while((a<1 || a > 4) || a == 3);
+        return a;
+
+    }
+    else if(current_attribute == 4){
+        do{
+            printf("1) Ninjutsu : %d\n", player_one->ninjutsu);
+            printf("2) Genjutsu : %d\n", player_one->genjutsu);
+            printf("3) Taijutsu : %d\n", player_one->taijutsu);
+            printf("X) XX       : XX\n");
+        
+            scanf("%i", &a);
+            if((a<1 || a > 4) || a == 4){
+                printf("\nSelecione um atributo valido.\n");
+            }
+        }while((a<1 || a > 4) || a == 4);
+        return a;
+
+    }
+    return 0;
+
+}
+
+
+
+void menu() {
+    printf("----------- BEM VINDO AO EXAME CHUNNIN ----------------\n");
+    printf("1) Comecar exame\n");
+    printf("2) Sair\n\n");
+
+    int aux = 0;
+    do{
+        scanf("%i", &aux);
+        if(aux != 2 && aux != 1){
+            printf("Opcao invalida");
+        }
+    }while(aux != 2 && aux != 1);
+    if(aux == 1){
+    srand(time(NULL));
+
+    FILE *file = fopen(ARQUIVO, "r");
+    char * texto = inicializa_arquivo(file);
+    t_lista_dupla* lista =  separa_ninjas(texto, file);
+
+
+   // imprime_lista(lista);
+
+    t_node * root = tree_create(4);
+
+    add_ninjas(lista, root);
+
+  
+   // tree_print_preorder(root);
+
+    Ninja * player  = tela_personagem(lista);  
+    
+    luta_personagem(player, root);
+    
+    destroy_tree(root);
+
+    free_lista(lista);
+    
+    free(texto);
+    fclose(file);
+    }
+    else{
+
+
+        return ;
+
+
+    }
 }

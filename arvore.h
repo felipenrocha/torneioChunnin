@@ -14,4 +14,11 @@ void add_ninjas(t_lista_dupla* lista, t_node* root);
 void tree_print_preorder(t_node * root);
 
 t_node * busca_parent_node(t_node * root, Ninja * player);
+
+int is_leaf(t_node * node);
+
+int is_parent(t_node * node);
+
+void destroy_tree(t_node * root);
+
 #endif

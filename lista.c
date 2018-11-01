@@ -60,3 +60,20 @@ while(aux != NULL){
  }
 
 }
+
+void free_lista(t_lista_dupla * lista){
+    elemento_ninja * aux = lista->inicio;
+    elemento_ninja * tmp;
+    while(aux){
+
+        ninja_free(aux->ninja);
+        tmp = aux->proximo;
+        free(aux);
+        aux = tmp;
+
+    }
+free(lista);
+
+
+
+}
