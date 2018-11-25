@@ -24,7 +24,7 @@ string[fsize] = '\0';
 t_lista_dupla* separa_ninjas(char* texto, FILE * file){
 
 t_lista_dupla* lista = aloca_lista();
-int ninjutsu, genjutsu,taijutsu, defesa,i,j;
+int ninjutsu, genjutsu,taijutsu, defesa,i,j = random_line();
 int  aux = 0;
 
 if(lista){
@@ -36,7 +36,7 @@ while(aux != 16){
     char * nome = NULL;
     do{
        
-        i = 0;    
+        i = 0 ;
         j = random_line();
        //nome:
         while(texto[j] != ','){
@@ -144,7 +144,7 @@ while(aux != 16){
     //defesa
     i = 0; 
     j = j + 2;
-    while(texto[j] != '\n'){
+    while(texto[j] != '\n' && texto[j] != EOF ){
         i++;
         j++;
     }
@@ -424,21 +424,27 @@ while(i<4){
     
     parent->node = winner;
     //tree_print_preorder(root);
-    if(player==loser){
+    if(player == loser){
         printf("\n\n DERROTA \n\n");
+        printf("\n\nResultados da %da etapa:\n", i+1);
+        root =  luta_npc(root, parent);
         break;
     }
+    if(root->node != winner && i != 4){
     printf("\n\nResultados da %da etapa:\n", i+1);
-root =  luta_npc(root, parent);
+    root =  luta_npc(root, parent);
+}
 i++;
 }
-
-    while(root->node == NULL){
-            printf("\n\nResultados da %da etapa:\n", i+1);
-            root = luta_npc(root, NULL);
-            i++;
-        }
-    printf("\nVencedor: %s\n", root->node->nome);
+    
+       /* while(root->node == NULL){
+                printf("\n\nResultados da %da etapa:\n", i+1);
+                root = luta_npc(root, NULL);
+                i++;
+            }*/
+    
+    if(player == root->node){
+        printf("\nVencedor: %s\n", root->node->nome);}
 
 }
 
